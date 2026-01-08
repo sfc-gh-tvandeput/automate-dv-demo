@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: as_of_date
+    description: "Date spine for PIT tables - generates daily dates from 1992-01-01 to 1998-12-31"
+    columns:
+      - name: AS_OF_DATE
+        description: "Calendar date for point-in-time snapshots"
+        tests:
+          - unique
+          - not_null
+
+  - name: pit_customer
+    description: "Point-In-Time table for customer - tracks satellite versions at each as_of_date"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - CUSTOMER_PK
+            - AS_OF_DATE
+    columns:
+      - name: CUSTOMER_PK
+        description: "Business key from hub_customer"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_customer')
+              field: CUSTOMER_PK
+      - name: AS_OF_DATE
+        description: "Snapshot date"
+        tests:
+          - not_null
+      - name: SAT_ORDER_CUSTOMER_DETAILS_PK
+        description: "Key to satellite record active on as_of_date"
+        tests:
+          - not_null
+      - name: SAT_ORDER_CUSTOMER_DETAILS_LDTS
+        description: "Load date of satellite record active on as_of_date"
+        tests:
+          - not_null

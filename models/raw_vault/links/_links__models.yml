@@ -1,0 +1,212 @@
+version: 2
+
+models:
+  - name: link_customer_order
+    description: "Link between customer and order"
+    columns:
+      - name: ORDER_CUSTOMER_PK
+        description: "Primary key (hash of CUSTOMER_PK + ORDER_PK)"
+        tests:
+          - unique
+          - not_null
+      - name: CUSTOMER_PK
+        description: "FK to hub_customer"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_customer')
+              field: CUSTOMER_PK
+      - name: ORDER_PK
+        description: "FK to hub_order"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_order')
+              field: ORDER_PK
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: link_customer_nation
+    description: "Link between customer and nation"
+    columns:
+      - name: LINK_CUSTOMER_NATION_PK
+        description: "Primary key (hash of CUSTOMER_PK + NATION_PK)"
+        tests:
+          - unique
+          - not_null
+      - name: CUSTOMER_PK
+        description: "FK to hub_customer"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_customer')
+              field: CUSTOMER_PK
+      - name: NATION_PK
+        description: "FK to hub_nation"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_nation')
+              field: NATION_PK
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: link_order_lineitem
+    description: "Link between order and lineitem"
+    columns:
+      - name: LINK_LINEITEM_ORDER_PK
+        description: "Primary key (hash of ORDER_PK + LINEITEM_PK)"
+        tests:
+          - unique
+          - not_null
+      - name: ORDER_PK
+        description: "FK to hub_order"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_order')
+              field: ORDER_PK
+      - name: LINEITEM_PK
+        description: "FK to hub_lineitem"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_lineitem')
+              field: LINEITEM_PK
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: link_inventory
+    description: "Link between supplier and part (inventory)"
+    columns:
+      - name: INVENTORY_PK
+        description: "Primary key (hash of SUPPLIER_PK + PART_PK)"
+        tests:
+          - unique
+          - not_null
+      - name: SUPPLIER_PK
+        description: "FK to hub_supplier"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_supplier')
+              field: SUPPLIER_PK
+      - name: PART_PK
+        description: "FK to hub_part"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_part')
+              field: PART_PK
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: link_inventory_allocation
+    description: "Link between part, supplier, and lineitem"
+    columns:
+      - name: INVENTORY_ALLOCATION_PK
+        description: "Primary key (hash of PART_PK + SUPPLIER_PK + LINEITEM_PK)"
+        tests:
+          - unique
+          - not_null
+      - name: PART_PK
+        description: "FK to hub_part"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_part')
+              field: PART_PK
+      - name: SUPPLIER_PK
+        description: "FK to hub_supplier"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_supplier')
+              field: SUPPLIER_PK
+      - name: LINEITEM_PK
+        description: "FK to hub_lineitem"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_lineitem')
+              field: LINEITEM_PK
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: link_nation_region
+    description: "Link between nation and region"
+    columns:
+      - name: NATION_REGION_PK
+        description: "Primary key (hash of NATION_PK + REGION_PK)"
+        tests:
+          - unique
+          - not_null
+      - name: NATION_PK
+        description: "FK to hub_nation"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_nation')
+              field: NATION_PK
+      - name: REGION_PK
+        description: "FK to hub_region"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_region')
+              field: REGION_PK
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: link_supplier_nation
+    description: "Link between supplier and nation"
+    columns:
+      - name: LINK_SUPPLIER_NATION_PK
+        description: "Primary key (hash of SUPPLIER_PK + NATION_PK)"
+        tests:
+          - unique
+          - not_null
+      - name: SUPPLIER_PK
+        description: "FK to hub_supplier"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_supplier')
+              field: SUPPLIER_PK
+      - name: NATION_PK
+        description: "FK to hub_nation"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_nation')
+              field: NATION_PK
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null

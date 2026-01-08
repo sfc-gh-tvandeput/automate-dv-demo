@@ -106,6 +106,5 @@ WITH staging AS (
                      ranked_columns=none) }}
 )
 
-SELECT *,
-       TO_DATE('{{ var('load_date') }}') AS LOAD_DATE
+SELECT *
 FROM staging

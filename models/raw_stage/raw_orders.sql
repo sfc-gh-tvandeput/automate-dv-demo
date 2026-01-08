@@ -23,6 +23,7 @@ SELECT
     b.O_CLERK AS CLERK,
     b.O_SHIPPRIORITY AS SHIPPRIORITY,
     b.O_COMMENT AS ORDER_COMMENT,
+    b.LOAD_DATE AS LOAD_DATE,
     c.C_NAME AS CUSTOMER_NAME,
     c.C_ADDRESS AS CUSTOMER_ADDRESS,
     c.C_NATIONKEY AS CUSTOMER_NATION_KEY,
@@ -38,12 +39,16 @@ SELECT
 FROM {{ source('tpch_sample', 'ORDERS') }} AS b
 LEFT JOIN {{ source('tpch_sample', 'LINEITEM') }} AS a
     ON a.L_ORDERKEY = b.O_ORDERKEY
-LEFT JOIN {{ source('tpch_sample', 'CUSTOMER') }} AS c
-    ON b.O_CUSTKEY  = c.C_CUSTKEY
+    AND a.LOAD_DATE = b.LOAD_DATE
+LEFT JOIN (
+    SELECT * FROM {{ source('tpch_sample', 'CUSTOMER') }}
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY C_CUSTKEY ORDER BY LOAD_DATE DESC) = 1
+) AS c
+    ON b.O_CUSTKEY = c.C_CUSTKEY
 LEFT JOIN {{ source('tpch_sample', 'NATION') }} AS d
-    ON c.C_NATIONKEY  = d.N_NATIONKEY
+    ON c.C_NATIONKEY = d.N_NATIONKEY
 LEFT JOIN {{ source('tpch_sample', 'REGION') }} AS e
-    ON d.N_REGIONKEY  = e.R_REGIONKEY
+    ON d.N_REGIONKEY = e.R_REGIONKEY
 LEFT JOIN {{ source('tpch_sample', 'PART') }} AS g
     ON a.L_PARTKEY = g.P_PARTKEY
 LEFT JOIN {{ source('tpch_sample', 'SUPPLIER') }} AS h
@@ -52,4 +57,3 @@ LEFT JOIN {{ source('tpch_sample', 'NATION') }} AS j
     ON h.S_NATIONKEY = j.N_NATIONKEY
 LEFT JOIN {{ source('tpch_sample', 'REGION') }} AS k
     ON j.N_REGIONKEY = k.R_REGIONKEY
-WHERE b.O_ORDERDATE = TO_DATE('{{ var('load_date') }}')

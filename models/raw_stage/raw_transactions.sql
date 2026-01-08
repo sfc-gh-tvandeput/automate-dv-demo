@@ -9,8 +9,11 @@ SELECT
     CASE ABS(MOD(RANDOM(1), 2)) + 1
         WHEN 1 THEN 'DR'
         WHEN 2 THEN 'CR'
-    END AS VARCHAR(2)) AS TYPE
+    END AS VARCHAR(2)) AS TYPE,
+    b.LOAD_DATE AS LOAD_DATE
 FROM {{ source('tpch_sample', 'ORDERS') }}  AS b
-LEFT JOIN {{ source('tpch_sample', 'CUSTOMER') }} AS c
+LEFT JOIN (
+    SELECT * FROM {{ source('tpch_sample', 'CUSTOMER') }}
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY C_CUSTKEY ORDER BY LOAD_DATE DESC) = 1
+) AS c
     ON b.O_CUSTKEY = c.C_CUSTKEY
-WHERE b.O_ORDERDATE = TO_DATE('{{ var('load_date') }}')

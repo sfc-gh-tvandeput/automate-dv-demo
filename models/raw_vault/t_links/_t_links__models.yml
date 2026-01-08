@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: t_link_transactions
+    description: "Transactional link for customer transactions"
+    columns:
+      - name: TRANSACTION_PK
+        description: "Primary key (hash of transaction)"
+        tests:
+          - unique
+          - not_null
+      - name: CUSTOMER_PK
+        description: "FK to hub_customer"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_customer')
+              field: CUSTOMER_PK
+      - name: ORDER_PK
+        description: "FK to hub_order"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_order')
+              field: ORDER_PK
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: EFFECTIVE_FROM
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null

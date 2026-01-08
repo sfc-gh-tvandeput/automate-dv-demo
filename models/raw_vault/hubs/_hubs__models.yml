@@ -1,0 +1,139 @@
+version: 2
+
+models:
+  - name: hub_customer
+    description: "Hub for customer business keys"
+    columns:
+      - name: CUSTOMER_PK
+        description: "Primary key (hash of CUSTOMERKEY)"
+        tests:
+          - unique
+          - not_null
+      - name: CUSTOMERKEY
+        description: "Natural key - customer identifier"
+        tests:
+          - not_null
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: hub_order
+    description: "Hub for order business keys"
+    columns:
+      - name: ORDER_PK
+        description: "Primary key (hash of ORDERKEY)"
+        tests:
+          - unique
+          - not_null
+      - name: ORDERKEY
+        description: "Natural key - order identifier"
+        tests:
+          - not_null
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: hub_lineitem
+    description: "Hub for lineitem business keys"
+    columns:
+      - name: LINEITEM_PK
+        description: "Primary key (hash of LINENUMBER + ORDERKEY)"
+        tests:
+          - unique
+          - not_null
+      - name: LINENUMBER
+        description: "Natural key - line number"
+        tests:
+          - not_null
+      - name: ORDERKEY
+        description: "Natural key - order identifier"
+        tests:
+          - not_null
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: hub_part
+    description: "Hub for part business keys"
+    columns:
+      - name: PART_PK
+        description: "Primary key (hash of PARTKEY)"
+        tests:
+          - unique
+          - not_null
+      - name: PARTKEY
+        description: "Natural key - part identifier"
+        tests:
+          - not_null
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: hub_supplier
+    description: "Hub for supplier business keys"
+    columns:
+      - name: SUPPLIER_PK
+        description: "Primary key (hash of SUPPLIERKEY)"
+        tests:
+          - unique
+          - not_null
+      - name: SUPPLIERKEY
+        description: "Natural key - supplier identifier"
+        tests:
+          - not_null
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: hub_nation
+    description: "Hub for nation business keys"
+    columns:
+      - name: NATION_PK
+        description: "Primary key (hash of NATION_KEY)"
+        tests:
+          - unique
+          - not_null
+      - name: NATION_KEY
+        description: "Natural key - nation identifier"
+        tests:
+          - not_null
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: hub_region
+    description: "Hub for region business keys"
+    columns:
+      - name: REGION_PK
+        description: "Primary key (hash of REGION_KEY)"
+        tests:
+          - unique
+          - not_null
+      - name: REGION_KEY
+        description: "Natural key - region identifier"
+        tests:
+          - not_null
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null

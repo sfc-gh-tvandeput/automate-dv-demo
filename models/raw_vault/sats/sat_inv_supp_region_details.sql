@@ -1,12 +1,21 @@
-{%- set source_model = "v_stg_inventory" -%}
-{%- set src_pk = "SUPPLIER_PK" -%}
-{%- set src_hashdiff = "SUPPLIER_NATION_HASHDIFF" -%}
-{%- set src_payload = ["SUPPLIER_NATION_NAME", "SUPPLIER_NATION_COMMENT"] -%}
-{%- set src_eff = "EFFECTIVE_FROM" -%}
-{%- set src_ldts = "LOAD_DATE" -%}
-{%- set src_source = "RECORD_SOURCE" -%}
+{%- set yaml_metadata -%}
+source_model: v_stg_inventory
+src_pk: SUPPLIER_PK
+src_hashdiff: SUPPLIER_REGION_HASHDIFF
+src_payload:
+  - SUPPLIER_REGION_NAME
+  - SUPPLIER_REGION_COMMENT
+src_eff: EFFECTIVE_FROM
+src_ldts: LOAD_DATE
+src_source: RECORD_SOURCE
+{%- endset -%}
 
-{{ automate_dv.sat(src_pk=src_pk, src_hashdiff=src_hashdiff,
-                   src_payload=src_payload, src_eff=src_eff,
-                   src_ldts=src_ldts, src_source=src_source,
-                   source_model=source_model) }}
+{% set metadata = fromyaml(yaml_metadata) %}
+
+{{ automate_dv.sat(src_pk=metadata['src_pk'],
+                   src_hashdiff=metadata['src_hashdiff'],
+                   src_payload=metadata['src_payload'],
+                   src_eff=metadata['src_eff'],
+                   src_ldts=metadata['src_ldts'],
+                   src_source=metadata['src_source'],
+                   source_model=metadata['source_model']) }}

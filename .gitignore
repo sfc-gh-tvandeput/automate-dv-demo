@@ -7,3 +7,9 @@ logs
 
 dbt_modules
 dbt_packages
+
+.venv/
+.claude/
+.cortex/
+.taskmaster/
+profiles.yml

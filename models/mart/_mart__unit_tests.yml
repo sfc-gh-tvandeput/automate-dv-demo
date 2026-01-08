@@ -1,0 +1,84 @@
+version: 2
+
+unit_tests:
+  - name: test_dim_customer_scd2_condensation
+    description: "Verify SCD2 condensation sets correct VALID_FROM/VALID_TO boundaries and IS_CURRENT flag"
+    model: dim_customer
+    overrides:
+      macros:
+        is_incremental: false
+    given:
+      - input: ref('pit_customer')
+        rows:
+          - {CUSTOMER_PK: 'a1', AS_OF_DATE: '1992-01-08', SAT_ORDER_CUSTOMER_DETAILS_LDTS: '1992-01-08'}
+          - {CUSTOMER_PK: 'a1', AS_OF_DATE: '1992-01-09', SAT_ORDER_CUSTOMER_DETAILS_LDTS: '1992-01-09'}
+          - {CUSTOMER_PK: 'a2', AS_OF_DATE: '1992-01-08', SAT_ORDER_CUSTOMER_DETAILS_LDTS: '1992-01-08'}
+      - input: ref('sat_order_customer_details')
+        rows:
+          - {CUSTOMER_PK: 'a1', LOAD_DATE: '1992-01-08', CUSTOMER_HASHDIFF: '01'}
+          - {CUSTOMER_PK: 'a1', LOAD_DATE: '1992-01-09', CUSTOMER_HASHDIFF: '02'}
+          - {CUSTOMER_PK: 'a2', LOAD_DATE: '1992-01-08', CUSTOMER_HASHDIFF: '03'}
+    expect:
+      rows:
+        - {CUSTOMER_PK: 'a1', VALID_FROM: '1992-01-08', VALID_TO: '1992-01-09 00:00:00', IS_CURRENT: false}
+        - {CUSTOMER_PK: 'a1', VALID_FROM: '1992-01-09', VALID_TO: '9999-12-31 23:59:59', IS_CURRENT: true}
+        - {CUSTOMER_PK: 'a2', VALID_FROM: '1992-01-08', VALID_TO: '9999-12-31 23:59:59', IS_CURRENT: true}
+
+  - name: test_dim_customer_same_hashdiff_creates_single_version
+    description: "Verify consecutive PIT records with same hashdiff produce single SCD2 version"
+    model: dim_customer
+    overrides:
+      macros:
+        is_incremental: false
+    given:
+      - input: ref('pit_customer')
+        rows:
+          - {CUSTOMER_PK: 'a1', AS_OF_DATE: '1992-01-08', SAT_ORDER_CUSTOMER_DETAILS_LDTS: '1992-01-08'}
+          - {CUSTOMER_PK: 'a1', AS_OF_DATE: '1992-01-09', SAT_ORDER_CUSTOMER_DETAILS_LDTS: '1992-01-08'}
+          - {CUSTOMER_PK: 'a1', AS_OF_DATE: '1992-01-10', SAT_ORDER_CUSTOMER_DETAILS_LDTS: '1992-01-08'}
+      - input: ref('sat_order_customer_details')
+        rows:
+          - {CUSTOMER_PK: 'a1', LOAD_DATE: '1992-01-08', CUSTOMER_HASHDIFF: '01'}
+    expect:
+      rows:
+        - {CUSTOMER_PK: 'a1', VALID_FROM: '1992-01-08', VALID_TO: '9999-12-31 23:59:59', IS_CURRENT: true}
+
+  - name: test_fct_orders_customer_lookup
+    description: "Verify fct_orders correctly looks up CUSTOMER_SK from dim_customer"
+    model: fct_orders
+    overrides:
+      macros:
+        is_incremental: false
+    given:
+      - input: ref('sat_order_order_details')
+        rows:
+          - {ORDER_PK: 'b1', TOTALPRICE: 100.00, LOAD_DATE: '1992-01-08'}
+      - input: ref('link_customer_order')
+        rows:
+          - {CUSTOMER_PK: 'a1', ORDER_PK: 'b1'}
+      - input: ref('dim_customer')
+        rows:
+          - {CUSTOMER_SK: 'aa', CUSTOMER_PK: 'a1', IS_CURRENT: true}
+    expect:
+      rows:
+        - {ORDER_PK: 'b1', CUSTOMER_SK: 'aa', CUSTOMER_PK: 'a1', TOTAL_PRICE: 100.00}
+
+  - name: test_fct_orders_unknown_customer
+    description: "Verify fct_orders assigns CUSTOMER_SK='UNKNOWN' when no matching customer found"
+    model: fct_orders
+    overrides:
+      macros:
+        is_incremental: false
+    given:
+      - input: ref('sat_order_order_details')
+        rows:
+          - {ORDER_PK: 'b1', TOTALPRICE: 200.00, LOAD_DATE: '1992-01-08'}
+      - input: ref('link_customer_order')
+        rows:
+          - {CUSTOMER_PK: 'a1', ORDER_PK: 'b1'}
+      - input: ref('dim_customer')
+        rows:
+          - {CUSTOMER_SK: 'aa', CUSTOMER_PK: 'a2', IS_CURRENT: true}
+    expect:
+      rows:
+        - {ORDER_PK: 'b1', CUSTOMER_SK: 'UNKNOWN', CUSTOMER_PK: 'a1', TOTAL_PRICE: 200.00}

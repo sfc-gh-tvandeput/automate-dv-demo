@@ -1,8 +1,15 @@
-{%- set source_model = "v_stg_orders" -%}
-{%- set src_pk = "CUSTOMER_PK" -%}
-{%- set src_nk = "CUSTOMERKEY" -%}
-{%- set src_ldts = "LOAD_DATE" -%}
-{%- set src_source = "RECORD_SOURCE" -%}
+{%- set yaml_metadata -%}
+source_model: v_stg_orders
+src_pk: CUSTOMER_PK
+src_nk: CUSTOMERKEY
+src_ldts: LOAD_DATE
+src_source: RECORD_SOURCE
+{%- endset -%}
 
-{{ automate_dv.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
-                   src_source=src_source, source_model=source_model) }}
+{% set metadata = fromyaml(yaml_metadata) %}
+
+{{ automate_dv.hub(src_pk=metadata['src_pk'],
+                   src_nk=metadata['src_nk'],
+                   src_ldts=metadata['src_ldts'],
+                   src_source=metadata['src_source'],
+                   source_model=metadata['source_model']) }}

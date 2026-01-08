@@ -1,0 +1,282 @@
+version: 2
+
+models:
+  - name: sat_order_customer_details
+    description: "Satellite for customer descriptive attributes"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - CUSTOMER_PK
+            - LOAD_DATE
+    columns:
+      - name: CUSTOMER_PK
+        description: "FK to hub_customer"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_customer')
+              field: CUSTOMER_PK
+      - name: CUSTOMER_HASHDIFF
+        tests:
+          - not_null
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: EFFECTIVE_FROM
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: sat_order_order_details
+    description: "Satellite for order descriptive attributes"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - ORDER_PK
+            - LOAD_DATE
+    columns:
+      - name: ORDER_PK
+        description: "FK to hub_order"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_order')
+              field: ORDER_PK
+      - name: ORDER_HASHDIFF
+        tests:
+          - not_null
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: EFFECTIVE_FROM
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: sat_order_lineitem_details
+    description: "Satellite for lineitem descriptive attributes"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - LINEITEM_PK
+            - LOAD_DATE
+    columns:
+      - name: LINEITEM_PK
+        description: "FK to hub_lineitem"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_lineitem')
+              field: LINEITEM_PK
+      - name: LINEITEM_HASHDIFF
+        tests:
+          - not_null
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: EFFECTIVE_FROM
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: sat_order_cust_nation_details
+    description: "Satellite for customer nation descriptive attributes"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - CUSTOMER_PK
+            - LOAD_DATE
+    columns:
+      - name: CUSTOMER_PK
+        description: "FK to hub_customer"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_customer')
+              field: CUSTOMER_PK
+      - name: CUSTOMER_NATION_HASHDIFF
+        tests:
+          - not_null
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: EFFECTIVE_FROM
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: sat_order_cust_region_details
+    description: "Satellite for customer region descriptive attributes"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - CUSTOMER_PK
+            - LOAD_DATE
+    columns:
+      - name: CUSTOMER_PK
+        description: "FK to hub_customer"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_customer')
+              field: CUSTOMER_PK
+      - name: CUSTOMER_REGION_HASHDIFF
+        tests:
+          - not_null
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: EFFECTIVE_FROM
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: sat_inv_inventory_details
+    description: "Satellite for inventory descriptive attributes"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - INVENTORY_PK
+            - LOAD_DATE
+    columns:
+      - name: INVENTORY_PK
+        description: "FK to link_inventory"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('link_inventory')
+              field: INVENTORY_PK
+      - name: INVENTORY_HASHDIFF
+        tests:
+          - not_null
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: EFFECTIVE_FROM
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: sat_inv_part_details
+    description: "Satellite for part descriptive attributes"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - PART_PK
+            - LOAD_DATE
+    columns:
+      - name: PART_PK
+        description: "FK to hub_part"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_part')
+              field: PART_PK
+      - name: PART_HASHDIFF
+        tests:
+          - not_null
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: EFFECTIVE_FROM
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: sat_inv_supplier_details
+    description: "Satellite for supplier descriptive attributes"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - SUPPLIER_PK
+            - LOAD_DATE
+    columns:
+      - name: SUPPLIER_PK
+        description: "FK to hub_supplier"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_supplier')
+              field: SUPPLIER_PK
+      - name: SUPPLIER_HASHDIFF
+        tests:
+          - not_null
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: EFFECTIVE_FROM
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: sat_inv_supp_nation_details
+    description: "Satellite for supplier nation descriptive attributes"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - SUPPLIER_PK
+            - LOAD_DATE
+    columns:
+      - name: SUPPLIER_PK
+        description: "FK to hub_supplier"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_supplier')
+              field: SUPPLIER_PK
+      - name: SUPPLIER_NATION_HASHDIFF
+        tests:
+          - not_null
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: EFFECTIVE_FROM
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null
+
+  - name: sat_inv_supp_region_details
+    description: "Satellite for supplier region descriptive attributes"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - SUPPLIER_PK
+            - LOAD_DATE
+    columns:
+      - name: SUPPLIER_PK
+        description: "FK to hub_supplier"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_supplier')
+              field: SUPPLIER_PK
+      - name: SUPPLIER_REGION_HASHDIFF
+        tests:
+          - not_null
+      - name: LOAD_DATE
+        tests:
+          - not_null
+      - name: EFFECTIVE_FROM
+        tests:
+          - not_null
+      - name: RECORD_SOURCE
+        tests:
+          - not_null

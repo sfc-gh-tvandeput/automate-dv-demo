@@ -1,0 +1,88 @@
+version: 2
+
+models:
+  - name: dim_customer
+    description: "SCD Type 2 customer dimension derived from PIT table snapshots using condensation pattern"
+    columns:
+      - name: CUSTOMER_SK
+        description: "Surrogate key (hash of CUSTOMER_PK + VALID_FROM)"
+        tests:
+          - unique
+          - not_null
+      - name: CUSTOMER_PK
+        description: "Business key from hub_customer (binary hash)"
+        tests:
+          - not_null
+      - name: CUSTOMER_NAME
+        description: "Customer name from sat_order_customer_details"
+      - name: CUSTOMER_ADDRESS
+        description: "Customer street address"
+      - name: CUSTOMER_PHONE
+        description: "Customer phone number"
+      - name: CUSTOMER_ACCBAL
+        description: "Customer account balance"
+      - name: CUSTOMER_MKTSEGMENT
+        description: "Market segment (AUTOMOBILE, BUILDING, FURNITURE, HOUSEHOLD, MACHINERY)"
+      - name: CUSTOMER_COMMENT
+        description: "Free-text customer comments"
+      - name: VALID_FROM
+        description: "Start of validity period (date when this version became effective)"
+        tests:
+          - not_null
+      - name: VALID_TO
+        description: "End of validity period (9999-12-31 23:59:59 for current records)"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= VALID_FROM"
+      - name: IS_CURRENT
+        description: "Boolean flag - TRUE if this is the current active record"
+        tests:
+          - not_null
+      - name: DBT_UPDATED_AT
+        description: "Timestamp when dbt last updated this record"
+
+  - name: fct_orders
+    description: "Transactional fact table for orders - grain is one row per order"
+    columns:
+      - name: ORDER_SK
+        description: "Surrogate key for order (hash of ORDER_PK)"
+        tests:
+          - unique
+          - not_null
+      - name: ORDER_PK
+        description: "Business key from hub_order (binary hash)"
+        tests:
+          - not_null
+      - name: CUSTOMER_SK
+        description: "Foreign key to dim_customer (current record) - 'UNKNOWN' if customer not found"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customer')
+              field: CUSTOMER_SK
+              config:
+                where: "CUSTOMER_SK != 'UNKNOWN'"
+      - name: CUSTOMER_PK
+        description: "Business key to hub_customer for audit/lineage"
+      - name: ORDER_DATE
+        description: "Date the order was placed"
+      - name: ORDER_STATUS
+        description: "Order status code (F=Fulfilled, O=Open, P=Pending)"
+      - name: ORDER_PRIORITY
+        description: "Priority level (1-URGENT, 2-HIGH, 3-MEDIUM, 4-NOT SPECIFIED, 5-LOW)"
+      - name: TOTAL_PRICE
+        description: "Total order value in dollars"
+        tests:
+          - not_null
+      - name: CLERK
+        description: "Clerk identifier who processed the order"
+      - name: SHIP_PRIORITY
+        description: "Shipping priority indicator"
+      - name: ORDER_COMMENT
+        description: "Free-text order comments"
+      - name: LOAD_DATE
+        description: "Date the order was loaded into the vault"
+      - name: DBT_UPDATED_AT
+        description: "Timestamp when dbt last updated this record"
