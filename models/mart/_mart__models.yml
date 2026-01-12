@@ -34,8 +34,7 @@ models:
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              arguments:
-                expression: ">= VALID_FROM"
+              expression: ">= VALID_FROM"
       - name: IS_CURRENT
         description: "Boolean flag - TRUE if this is the current active record"
         tests:

@@ -42,9 +42,10 @@ LEFT JOIN {{ source('tpch_sample', 'LINEITEM') }} AS a
     AND a.LOAD_DATE = b.LOAD_DATE
 LEFT JOIN (
     SELECT * FROM {{ source('tpch_sample', 'CUSTOMER') }}
-    QUALIFY ROW_NUMBER() OVER (PARTITION BY C_CUSTKEY ORDER BY LOAD_DATE DESC) = 1
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY C_CUSTKEY, LOAD_DATE ORDER BY LOAD_DATE DESC) = 1
 ) AS c
     ON b.O_CUSTKEY = c.C_CUSTKEY
+    AND b.LOAD_DATE = c.LOAD_DATE
 LEFT JOIN {{ source('tpch_sample', 'NATION') }} AS d
     ON c.C_NATIONKEY = d.N_NATIONKEY
 LEFT JOIN {{ source('tpch_sample', 'REGION') }} AS e

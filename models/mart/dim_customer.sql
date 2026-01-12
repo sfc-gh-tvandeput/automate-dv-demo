@@ -18,6 +18,12 @@ with pit_records as (
     {% endif %}
 ),
 
+sat_deduped as (
+    select *
+    from {{ ref('sat_order_customer_details') }}
+    qualify row_number() over (partition by CUSTOMER_PK, LOAD_DATE order by LOAD_DATE) = 1
+),
+
 customer_payload as (
     select
         p.CUSTOMER_PK,
@@ -30,7 +36,7 @@ customer_payload as (
         s.CUSTOMER_COMMENT,
         s.CUSTOMER_HASHDIFF
     from pit_records p
-    inner join {{ ref('sat_order_customer_details') }} s
+    inner join sat_deduped s
         on p.CUSTOMER_PK = s.CUSTOMER_PK
         and p.SAT_ORDER_CUSTOMER_DETAILS_LDTS = s.LOAD_DATE
 ),
@@ -178,6 +184,7 @@ new_records as (
 )
 
 select * from new_records
+where CUSTOMER_SK not in (select CUSTOMER_SK from close_existing)
 union all
 select * from close_existing
 {% else %}
